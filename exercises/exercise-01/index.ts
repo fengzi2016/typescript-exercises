@@ -27,7 +27,9 @@ Run this exercise:
     yarn -s 1
 
 */
-
+interface Person {
+    
+}
 interface User {
     name: string;
     age: number;
