@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { type } from 'os';
 
 /*
 
@@ -48,6 +49,12 @@ interface Admin {
 }
 
 type Person = User | Admin;
+type NoTypeAdmin = Exclude<Admin, 'type'>;
+type NoTypeUser = Exclude<User, 'type'>;
+type NoTypePerson = Exclude<Person, 'type'>;
+type PartialNoTypePerson<T> = {
+    [P in keyof T]? : T[P];
+}
 
 const persons: Person[] = [
     { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
@@ -63,17 +70,23 @@ function logPerson(person: Person) {
         ` - ${chalk.green(person.name)}, ${person.age}, ${person.type === 'admin' ? person.role : person.occupation}`
     );
 }
-
-function filterPersons(persons: Person[], personType: string, criteria: unknown): unknown[] {
-    return persons
-        .filter((person) => person.type === personType)
-        .filter((person) => {
-            let criteriaKeys = Object.keys(criteria) as (keyof Person)[];
-            return criteriaKeys.every((fieldName) => {
-                return person[fieldName] === criteria[fieldName];
-            });
-        });
+type AdminT = 'admin'
+type UserT = 'user'
+function filterPersons(persons: Person[], personType: AdminT, criteria: PartialNoTypePerson<NoTypePerson>) :  Admin[];
+function filterPersons(persons: Person[], personType: UserT, criteria: PartialNoTypePerson<NoTypePerson>) :  User[];
+function filterPersons(persons: Person[], personType: AdminT | UserT, criteria: PartialNoTypePerson<NoTypePerson>) :  any[] {
+    const result: any[] =  persons
+    .filter((person) => person.type === personType)
+    .filter((person) => {
+        let criteriaKeys = Object.keys(criteria) as (keyof PartialNoTypePerson<NoTypePerson>)[];
+        return criteriaKeys.every((fieldName) => {
+            return person[fieldName] === criteria[fieldName];
+        }) ;
+    })
+    if(personType == 'user') return result as User[];
+    else return result as Admin[];
 }
+
 
 let usersOfAge23: User[] = filterPersons(persons, 'user', { age: 23 });
 let adminsOfAge23: Admin[] = filterPersons(persons, 'admin', { age: 23 });
