@@ -49,8 +49,6 @@ interface Admin {
 }
 
 type Person = User | Admin;
-type NoTypeAdmin = Exclude<Admin, 'type'>;
-type NoTypeUser = Exclude<User, 'type'>;
 type NoTypePerson = Exclude<Person, 'type'>;
 type PartialNoTypePerson<T> = {
     [P in keyof T]? : T[P];
