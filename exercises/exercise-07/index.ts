@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-
 /*
 
 Intro:
@@ -41,9 +40,11 @@ interface Admin {
     role: string;
 }
 
-type PowerUser = unknown;
 
-type Person = User | Admin | PowerUser;
+type PowerUser = Omit<Admin & User,'type'> & {type:'powerUser'}
+
+type Person = (Omit<PowerUser,'type'> | Omit<User,'type'> | Omit<Admin,'type'>) & {type: 'user'|'admin'|'powerUser'};
+
 
 const persons: Person[] = [
     { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
