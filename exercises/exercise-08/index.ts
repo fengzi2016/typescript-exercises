@@ -63,50 +63,41 @@ const users: User[] = [
     { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' }
 ];
 
-type AdminsApiResponse = (
-    {
-        status: 'success';
-        data: Admin[];
-    } |
-    {
-        status: 'error';
-        error: string;
-    }
-);
+interface successResponse<T> {
+    status: 'success';
+    data: T[];
+} 
+interface failResponse {
+    status: 'error';
+    error: string;
+}
+interface timeSuccessResponse {
+    status: 'success';
+    data: number;
+}
 
-function requestAdmins(callback: (response: AdminsApiResponse) => void) {
+function requestAdmins(callback: (response: successResponse<Admin> | failResponse) => void) {
     callback({
         status: 'success',
         data: admins
     });
 }
 
-type UsersApiResponse = (
-    {
-        status: 'success';
-        data: User[];
-    } |
-    {
-        status: 'error';
-        error: string;
-    }
-);
-
-function requestUsers(callback: (response: UsersApiResponse) => void) {
+function requestUsers(callback: (response:  successResponse<User> | failResponse) => void) {
     callback({
         status: 'success',
         data: users
     });
 }
 
-function requestCurrentServerTime(callback: (response: unknown) => void) {
+function requestCurrentServerTime(callback: (response: timeSuccessResponse | failResponse) => void) {
     callback({
         status: 'success',
         data: Date.now()
     });
 }
 
-function requestCoffeeMachineQueueLength(callback: (response: unknown) => void) {
+function requestCoffeeMachineQueueLength(callback: (response: successResponse<string> | failResponse) => void) {
     callback({
         status: 'error',
         error: 'Numeric value has exceeded Number.MAX_SAFE_INTEGER.'
