@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-
 /*
 
 Intro:
@@ -71,8 +70,16 @@ type ApiResponse<T> = (
     }
 );
 
-function promisify(arg: unknown): unknown {
-    return null;
+function promisify<T>(arg: (callback: (response: ApiResponse<T>) => void ) => void): () => Promise<T> {
+  return () => new Promise<T>((resolve, reject ) => {
+      arg(result => {
+          if(result.status == 'success') {
+              resolve(result.data)
+          } else {
+              reject(new Error(result.error))
+          }
+      })
+  })
 }
 
 const oldApi = {
